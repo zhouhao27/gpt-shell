@@ -13,6 +13,7 @@ from cmd2 import (
 import time
 from __init__ import __app_name__, _get_waiting_quotes
 import argparse
+from PIL import Image 
 
 class App(cmd2.Cmd):
     def __init__(self, env):
@@ -38,8 +39,8 @@ class App(cmd2.Cmd):
 
         self.welcome()
 
-    # Settings
-    cmd_parser = cmd2.Cmd2ArgumentParser(description='Setting')
+    # Config
+    cmd_parser = cmd2.Cmd2ArgumentParser(description='Config')
     cmd_parser.add_argument('-m', '--model', help='Name of the model')
     cmd_parser.add_argument('-t', '--tts', choices=['0', '1'], help='Enable/Disable TTS')
 
@@ -78,6 +79,20 @@ class App(cmd2.Cmd):
     def do_exit(self, line):
         self.poutput(Style.BOT.style('Bye!'))
         return True
+    
+    img_parser = cmd2.Cmd2ArgumentParser(description='Image')
+    img_parser.add_argument('path', help='Path of the image file')
+
+    @cmd2.with_argparser(img_parser)
+    @cmd2.with_category(__app_name__)
+    def do_image(self, args: argparse.Namespace):
+        if args.path:
+            im = Image.open(args.path) 
+            im.show()
+            prompt = self.read_input(
+                Style.PROMPT.style('Input prompt for the image > '),
+            )
+            # TODO: to use image as prompt foe Vision api
     def default(self, statement):        
         # the argument will be passed here if app start with some arguments
         # TODO: need to ignore this!!!
