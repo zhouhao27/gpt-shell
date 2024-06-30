@@ -1,0 +1,10 @@
+openai
+numpy
+sounddevice
+soundfile
+python-dotenv
+cmd2
+openai-whisper # openai-whisper, should try other whisper model?
+yaspin
+# argparse
+simpleaudio

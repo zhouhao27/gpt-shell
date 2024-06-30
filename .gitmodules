@@ -1,0 +1,3 @@
+[submodule "modules/ChatTTS"]
+	path = gptshell/modules/ChatTTS
+	url = https://github.com/2noise/ChatTTS.git

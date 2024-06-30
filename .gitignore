@@ -1,0 +1,13 @@
+.env
+__pycache__/
+build/
+dist/
+main.spec
+cache/
+.DS_Store
+config/
+asset/*
+temp.wav
+gptshell/modules/*
+gptshell/modules/ChatTTS
+*.env
