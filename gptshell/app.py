@@ -16,7 +16,7 @@ import argparse
 
 class App(cmd2.Cmd):
     def __init__(self, env):
-        super().__init__()
+        super().__init__(allow_cli_args=False)
         self.prompt = '>>> '        
         self.env = env
         self.recording = False

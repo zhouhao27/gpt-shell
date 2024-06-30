@@ -4,6 +4,8 @@ This is a simple chatbot shell application which is able to connect to any llama
 
 ![Architecture](architecture.png "Architecture")
 
+## Installation
+
 ## Dependencies
 
 - Python 3.10 or higher
@@ -27,6 +29,23 @@ $ git submodule add https://github.com/2noise/ChatTTS.git
 $ cd ChatTTS
 $ pip install -r requirements.txt
 ```
+
+## How to run the application
+
+- Add a environment file in project's root folder. The application will take default file name as '.openai.env'.
+- Add the following environment variables to the `.env` file as an example.
+```
+OPENAI_API_KEY="mykey"
+OPENAI_BASE_URL="http://localhost:11434/v1"
+DEFAULT_MODEL="qwen2"
+```
+- Run the application
+
+```bash
+$ python gptshell <you env file>
+```
+
+> If you have an .openai.env and want to use it. You can simply run `python gptshell`
 
 ## Distribution
 
