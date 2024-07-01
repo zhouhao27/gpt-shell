@@ -1,3 +1,4 @@
+import os
 from audio import AudioManager
 from utils import display_image
 from styles import Style
@@ -118,9 +119,12 @@ class App(cmd2.Cmd):
     @cmd2.with_category(__app_name__)
     def do_clear(self, line):    
         """Clear screen and reset the chat session (history)"""    
-        self.chatBot.reset()
+        self.chatBot.reset()        
+        if os.name == 'nt':
+            os.system('cls')
+        else:
+            os.system('clear')
         self.poutput(Style.INFO.style('Chat session cleared'))
-        # TODO: clear screen
 
     def default(self, statement):        
         # the argument will be passed here if app start with some arguments
