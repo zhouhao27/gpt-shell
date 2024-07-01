@@ -8,9 +8,7 @@ class ChatBot:
 
         self.client = OpenAI()
         self.model_name = os.environ.get("DEFAULT_MODEL")
-        self.history = [
-            {"role": "system", "content": "You are a helpful assistant."},
-        ]
+        self.reset()
     
     def chat(self,user_query, streaming_callback):
         
@@ -22,12 +20,20 @@ class ChatBot:
             # max_tokens=4096,
             stream=True
         )
+        complete_response = ""
         for chunk in response:                
             if chunk.choices is not None:                
                 if chunk.choices[0].delta.content is not None:
-                    self.history.append(chunk.choices[0].delta)
+                    # self.history.append({"role": "assistant", "content": chunk.choices[0].delta})
+                    complete_response += chunk.choices[0].delta.content
                     streaming_callback(chunk.choices[0].delta.content)
         
+        self.history.append({"role": "assistant", "content": complete_response})
     def get_model_name(self):
         return self.model_name
+    
+    def reset(self):
+        self.history = [
+            {"role": "system", "content": "You are a helpful assistant."},
+        ]
 

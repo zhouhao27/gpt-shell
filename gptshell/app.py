@@ -82,7 +82,7 @@ class App(cmd2.Cmd):
         self.poutput(Style.BOT.style('Bye!'))
         return True
     
-    img_parser = cmd2.Cmd2ArgumentParser(description='Image')
+    img_parser = cmd2.Cmd2ArgumentParser(description='Add image as input')
     img_parser.add_argument('path', help='Path of the image file')
 
     @cmd2.with_argparser(img_parser)
@@ -97,12 +97,13 @@ class App(cmd2.Cmd):
             )
             # TODO: to use image as prompt foe Vision api
 
-    doc_parser = cmd2.Cmd2ArgumentParser(description='Add documents')
+    doc_parser = cmd2.Cmd2ArgumentParser(description='Add documents for RAG')
     doc_parser.add_argument('path', help='Path of the document file or document folder', completer=cmd2.Cmd.path_complete)
 
     @cmd2.with_argparser(doc_parser)
     @cmd2.with_category(__app_name__)
     def do_add(self, args: argparse.Namespace):
+        """Add documents for RAG"""
         # Load documents
         # TODO: Only support pdf file now
         if filetype.guess(args.path).mime == 'application/pdf':
@@ -112,8 +113,14 @@ class App(cmd2.Cmd):
                 self.poutput(page.extract_text())
                 
         # Embedding
-        # Vector database
-        pass
+        # Vector database        
+    
+    @cmd2.with_category(__app_name__)
+    def do_clear(self, line):    
+        """Clear screen and reset the chat session (history)"""    
+        self.chatBot.reset()
+        self.poutput(Style.INFO.style('Chat session cleared'))
+        # TODO: clear screen
 
     def default(self, statement):        
         # the argument will be passed here if app start with some arguments
