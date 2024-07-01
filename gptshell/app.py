@@ -1,4 +1,5 @@
 from audio import AudioManager
+from utils import display_image
 from styles import Style
 from chat import ChatBot
 from modules.ChatTTS import ChatTTS
@@ -13,7 +14,8 @@ from cmd2 import (
 import time
 from __init__ import __app_name__, _get_waiting_quotes
 import argparse
-from PIL import Image 
+from pypdf import PdfReader 
+import filetype
 
 class App(cmd2.Cmd):
     def __init__(self, env):
@@ -87,12 +89,32 @@ class App(cmd2.Cmd):
     @cmd2.with_category(__app_name__)
     def do_image(self, args: argparse.Namespace):
         if args.path:
-            im = Image.open(args.path) 
-            im.show()
+            # im = Image.open(args.path) 
+            # im.show()
+            display_image(args.path)
             prompt = self.read_input(
                 Style.PROMPT.style('Input prompt for the image > '),
             )
             # TODO: to use image as prompt foe Vision api
+
+    doc_parser = cmd2.Cmd2ArgumentParser(description='Add documents')
+    doc_parser.add_argument('path', help='Path of the document file or document folder', completer=cmd2.Cmd.path_complete)
+
+    @cmd2.with_argparser(doc_parser)
+    @cmd2.with_category(__app_name__)
+    def do_add(self, args: argparse.Namespace):
+        # Load documents
+        # TODO: Only support pdf file now
+        if filetype.guess(args.path).mime == 'application/pdf':
+            reader = PdfReader(args.path)
+            pages = reader.pages
+            for page in pages:
+                self.poutput(page.extract_text())
+                
+        # Embedding
+        # Vector database
+        pass
+
     def default(self, statement):        
         # the argument will be passed here if app start with some arguments
         # TODO: need to ignore this!!!

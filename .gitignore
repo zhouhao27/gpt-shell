@@ -11,3 +11,4 @@ temp.wav
 gptshell/modules/*
 gptshell/modules/ChatTTS
 *.env
+data/

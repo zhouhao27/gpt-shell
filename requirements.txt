@@ -8,3 +8,5 @@ openai-whisper # openai-whisper, should try other whisper model?
 yaspin
 # argparse
 simpleaudio
+pypdf
+filetype
