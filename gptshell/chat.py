@@ -3,11 +3,14 @@ from dotenv import load_dotenv, find_dotenv
 import os
 
 class ChatBot: 
-    def __init__(self, env_file, model_name='gpt-3.5-turbo'):
+    def __init__(self, env_file, model_name=None):
         _ = load_dotenv(find_dotenv(env_file))
 
         self.client = OpenAI()
-        self.model_name = os.environ.get("DEFAULT_MODEL")
+        if model_name is not None:
+            self.model_name = model_name
+        else:
+            self.model_name = os.environ.get("DEFAULT_MODEL")
         self.reset()
     
     def chat(self,user_query, streaming_callback):
@@ -29,6 +32,8 @@ class ChatBot:
                     streaming_callback(chunk.choices[0].delta.content)
         
         self.history.append({"role": "assistant", "content": complete_response})
+        return complete_response
+    
     def get_model_name(self):
         return self.model_name
     
@@ -37,3 +42,5 @@ class ChatBot:
             {"role": "system", "content": "You are a helpful assistant."},
         ]
 
+    def list(self):
+        return self.client.models.list()

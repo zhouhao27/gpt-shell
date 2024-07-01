@@ -126,6 +126,16 @@ class App(cmd2.Cmd):
             os.system('clear')
         self.poutput(Style.INFO.style('Chat session cleared'))
 
+    @cmd2.with_category(__app_name__)
+    def do_list(self, line):    
+        """Get model list"""    
+        models = self.chatBot.list()
+        for model in models.data:
+            self.poutput(Style.INFO.style(f"ID: {model.id}"))
+            self.poutput(Style.INFO.style(f"Created: {model.created}"))
+            self.poutput(Style.INFO.style(f"Owned By: {model.owned_by}"))
+            self.poutput(Style.INFO.style("-" * 40))
+
     def default(self, statement):        
         # the argument will be passed here if app start with some arguments
         # TODO: need to ignore this!!!
@@ -141,11 +151,9 @@ class App(cmd2.Cmd):
         say = ''
         # self.poutput(Style.PROMPT.style('{}: '.format(self.chatBot.get_model_name())),end='')
         def chat_callback(stream):
-            global say
-            say += stream
             self.poutput(Style.BOT.style('{}'.format(stream)),end='')
 
-        self.chatBot.chat(text, chat_callback)
+        say = self.chatBot.chat(text, chat_callback)
         self.poutput(Style.BOT.style('\n'))
         # Streaming complete
         waiting = _get_waiting_quotes() + '...'
