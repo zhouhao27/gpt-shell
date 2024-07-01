@@ -131,7 +131,10 @@ class App(cmd2.Cmd):
         """Get model list"""    
         models = self.chatBot.list()
         for model in models.data:
-            self.poutput(Style.INFO.style(f"ID: {model.id}"))
+            if model.id == self.chatBot.get_model_name():
+                self.poutput(Style.IMPORTANT.style(f"* {model.id}"))
+            else:
+                self.poutput(Style.INFO.style(f"  {model.id}"))            
             self.poutput(Style.INFO.style(f"Created: {model.created}"))
             self.poutput(Style.INFO.style(f"Owned By: {model.owned_by}"))
             self.poutput(Style.INFO.style("-" * 40))
