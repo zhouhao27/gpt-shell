@@ -1,5 +1,7 @@
 import os
+import pathlib
 from audio import AudioManager
+from gptshell.embedor import Embedor
 from utils import display_image
 from styles import Style
 from chat import ChatBot
@@ -26,6 +28,7 @@ class App(cmd2.Cmd):
         self.env = env
         self.recording = False
         self.speaker = None
+        self.embedor = Embedor()
         
         with yaspin(text="Loading...", color="cyan") as sp:
             time.sleep(1)            
@@ -147,15 +150,24 @@ class App(cmd2.Cmd):
     def do_add(self, args: argparse.Namespace):
         """Add documents for RAG"""
         # Load documents
-        # TODO: Only support pdf file now
-        if filetype.guess(args.path).mime == 'application/pdf':
-            reader = PdfReader(args.path)
-            pages = reader.pages
-            for page in pages:
-                self.poutput(page.extract_text())
+        # TODO: Support other file types
+        content = None
+        type = filetype.guess(args.path)
+        if type is None:
+            if pathlib.Path(args.path).suffix.lower() == '.txt':
+                with open(args.path, 'r') as f:
+                    content = f.read()
+        else:
+            if type.mime == 'application/pdf':
+                reader = PdfReader(args.path)
+                pages = reader.pages
+                for page in pages:
+                    self.poutput(page.extract_text())
                 
-        # Embedding
-        # Vector database        
+        # add to vector db
+        if content is not None:
+            self.embedor.add_doc(content)
+            self.poutput(Style.INFO.style('Document added'))
     
     @cmd2.with_category(__app_name__)
     def do_clear(self, line):    
@@ -186,7 +198,9 @@ class App(cmd2.Cmd):
         def chat_callback(stream):
             self.poutput(Style.BOT.style('{}'.format(stream)),end='')
 
-        say = self.chatBot.chat(text, chat_callback)
+        message =f"Using this data: {self.embedor.embedding(text)}. Respond to this prompt: {text}" if self.embedor.has_data() else text        
+        print(message)    
+        say = self.chatBot.chat(message, chat_callback)
         self.poutput(Style.BOT.style('\n'))
         # Streaming complete
         waiting = _get_waiting_quotes() + '...'
@@ -217,9 +231,9 @@ class App(cmd2.Cmd):
         play_obj.wait_done()  # Wait until sound has finished playing
         
     def remove_commands(self):
-        del cmd2.Cmd.do_macro
-        del cmd2.Cmd.do_edit
-        del cmd2.Cmd.do_run_pyscript
-        del cmd2.Cmd.do_run_script
-        # del cmd2.Cmd.do_set
-        
+        # TODO: This will cause error when change the model
+        # del cmd2.Cmd.do_macro
+        # del cmd2.Cmd.do_edit
+        # del cmd2.Cmd.do_run_pyscript
+        # del cmd2.Cmd.do_run_script
+        pass
