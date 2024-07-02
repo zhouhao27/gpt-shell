@@ -1,12 +1,13 @@
 openai
+openai-whisper # openai-whisper, should try other whisper model?
 numpy
 sounddevice
 soundfile
 python-dotenv
 cmd2
-openai-whisper # openai-whisper, should try other whisper model?
 yaspin
-# argparse
 simpleaudio
 pypdf
 filetype
+EasySettings
+ollama

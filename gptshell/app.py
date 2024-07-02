@@ -17,6 +17,7 @@ from __init__ import __app_name__, _get_waiting_quotes
 import argparse
 from pypdf import PdfReader 
 import filetype
+from easysettings import EasySettings
 
 class App(cmd2.Cmd):
     def __init__(self, env):
@@ -35,10 +36,16 @@ class App(cmd2.Cmd):
         with yaspin(text="Loading...", color="cyan") as sp:
             time.sleep(1)            
             # Setting can be saved 
-            # self.model = model
-            # self.set_tts(tts)
-            # self.set_tts()
-            self.chatBot = ChatBot(env_file=self.env)
+            # Get name of env file withou extension
+            name = os.path.splitext(self.env)[0]
+            # Use it as config file name
+            config_file = name + '.conf'
+            self.settings = EasySettings(config_file)
+            model_name = self.settings.get('model')
+            self.chatBot = ChatBot(env_file=self.env,model_name=model_name)
+            tts = self.settings.get('tts')
+            if tts:
+                self.set_tts(True)
 
         self.welcome()
 
@@ -51,17 +58,22 @@ class App(cmd2.Cmd):
     @cmd2.with_argparser(cmd_parser)
     def do_config(self, args: argparse.Namespace):
         if args.model:
-            self.model = args.model
-            self.chatBot = ChatBot(env_file=self.env, model_name=self.model)
-            self.poutput(Style.INFO.style('Model changed to {}'.format(self.model)))         
+            model = args.model
+            self.chatBot = ChatBot(env_file=self.env, model_name=model)
+            self.settings.set('model', model)
+            self.poutput(Style.INFO.style('Model changed to {}'.format(model)))         
 
         # Check if tts value changed
         if args.tts: 
             if args.tts == '1' and self.speaker is None: 
                 self.set_tts(True)
+                self.settings.set('tts', True)
             elif args.tts == '0' and self.speaker is not None:   
-                self.set_tts(False)                 
+                self.set_tts(False)           
+                self.settings.set('tts', False)      
 
+        self.settings.save()
+             
     def set_tts(self, enabled = False):
         if enabled:
             self.speaker = ChatTTS.Chat()
@@ -128,16 +140,8 @@ class App(cmd2.Cmd):
 
     @cmd2.with_category(__app_name__)
     def do_list(self, line):    
-        """Get model list"""    
-        models = self.chatBot.list()
-        for model in models.data:
-            if model.id == self.chatBot.get_model_name():
-                self.poutput(Style.IMPORTANT.style(f"* {model.id}"))
-            else:
-                self.poutput(Style.INFO.style(f"  {model.id}"))            
-            self.poutput(Style.INFO.style(f"Created: {model.created}"))
-            self.poutput(Style.INFO.style(f"Owned By: {model.owned_by}"))
-            self.poutput(Style.INFO.style("-" * 40))
+        """Show model list"""    
+        self.chatBot.list()
 
     def default(self, statement):        
         # the argument will be passed here if app start with some arguments
