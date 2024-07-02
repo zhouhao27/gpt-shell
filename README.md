@@ -63,6 +63,15 @@ The standalone executable will be created in the dist folder.
 
 TODO: Is it possible to distribute to mobile?
 
+## Run
+
+- Goto poetry shell environment
+
+```bash
+$ poetry shell
+$ python gptshell
+```
+
 ## Issues
 
 Unable to install `openai-whisper` by using `poetry add`. So install it through `pip install` in `poetry shell` environment.

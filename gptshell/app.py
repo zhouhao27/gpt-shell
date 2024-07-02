@@ -121,7 +121,7 @@ class App(cmd2.Cmd):
         return True
     
     img_parser = cmd2.Cmd2ArgumentParser(description='Add image as input')
-    img_parser.add_argument('path', help='Path of the image file')
+    img_parser.add_argument('path', help='Path of the image file', completer=cmd2.Cmd.path_complete)
 
     @cmd2.with_argparser(img_parser)
     @cmd2.with_category(__app_name__)
@@ -130,8 +130,12 @@ class App(cmd2.Cmd):
             # im = Image.open(args.path) 
             # im.show()
             display_image(args.path)
+            placeholder = 'Input prompt for the image'
+            # input(f'>>> {placeholder}' + ('\b'*len(placeholder)))
+
             prompt = self.read_input(
-                Style.PROMPT.style('Input prompt for the image > '),
+                Style.PROMPT.style(f'> {placeholder}' + ('\b'*len(placeholder)))
+                # Style.PROMPT.style('Input prompt for the image > '),
             )
             # TODO: to use image as prompt foe Vision api
 
