@@ -12,3 +12,4 @@ gptshell/modules/*
 gptshell/modules/ChatTTS
 *.env
 data/
+*.conf
