@@ -1,6 +1,7 @@
 import base64
 import os
 import pathlib
+from PIL import Image
 from audio import AudioManager
 from gptshell.embedor import Embedor
 from utils import display_image
@@ -132,9 +133,9 @@ class App(cmd2.Cmd):
     @cmd2.with_category(__app_name__)
     def do_image(self, args: argparse.Namespace):
         if args.path:
-            # im = Image.open(args.path) 
-            # im.show()
-            display_image(args.path)
+            im = Image.open(args.path) 
+            im.show()
+            # display_image(args.path)
             image_base64 = base64.b64encode(open(args.path, 'rb').read()).decode('utf-8')
             placeholder = 'Input prompt for the image'
             # input(f'>>> {placeholder}' + ('\b'*len(placeholder)))
