@@ -217,12 +217,5 @@ class App(cmd2.Cmd):
         del cmd2.Cmd.do_edit
         del cmd2.Cmd.do_run_pyscript
         del cmd2.Cmd.do_run_script
-        del cmd2.Cmd.do_set
-
-        # # Hide unnecessary commands
-        # self.remove_command('macro')
-        # self.remove_command('run_pyscript')
-        # self.remove_command('run_script')
-        # self.remove_command('edit')
-        # self.remove_command('set')
+        # del cmd2.Cmd.do_set
         
