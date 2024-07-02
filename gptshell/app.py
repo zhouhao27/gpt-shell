@@ -1,3 +1,4 @@
+import base64
 import os
 import pathlib
 from audio import AudioManager
@@ -20,6 +21,7 @@ import argparse
 from pypdf import PdfReader 
 import filetype
 from config import Config
+from ollama import generate
 
 class App(cmd2.Cmd):
     def __init__(self, env):
@@ -133,14 +135,17 @@ class App(cmd2.Cmd):
             # im = Image.open(args.path) 
             # im.show()
             display_image(args.path)
+            image_base64 = base64.b64encode(open(args.path, 'rb').read()).decode('utf-8')
             placeholder = 'Input prompt for the image'
             # input(f'>>> {placeholder}' + ('\b'*len(placeholder)))
 
             prompt = self.read_input(
-                Style.PROMPT.style(f'> {placeholder}' + ('\b'*len(placeholder)))
-                # Style.PROMPT.style('Input prompt for the image > '),
+                # Style.PROMPT.style(f'> {placeholder}' + ('\b'*len(placeholder)))
+                Style.PROMPT.style('Input prompt for the image > '),
             )
             # TODO: to use image as prompt foe Vision api
+            result = generate('llava', prompt, stream=False, images=[image_base64])
+            self.poutput(Style.BOT.style(result['response']))
 
     doc_parser = cmd2.Cmd2ArgumentParser(description='Add documents for RAG')
     doc_parser.add_argument('path', help='Path of the document file or document folder', completer=cmd2.Cmd.path_complete)
@@ -199,7 +204,6 @@ class App(cmd2.Cmd):
             self.poutput(Style.BOT.style('{}'.format(stream)),end='')
 
         message =f"Using this data: {self.embedor.embedding(text)}. Respond to this prompt: {text}" if self.embedor.has_data() else text        
-        print(message)    
         say = self.chatBot.chat(message, chat_callback)
         self.poutput(Style.BOT.style('\n'))
         # Streaming complete
