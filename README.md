@@ -25,6 +25,8 @@ $ git submodule add https://github.com/2noise/ChatTTS.git
 
 - Build
 
+Have to run `poetry shell` first. 
+
 ```bash
 $ cd ChatTTS
 $ pip install -r requirements.txt
@@ -60,6 +62,10 @@ $ pyinstaller -F gptshell/__main__.py
 The standalone executable will be created in the dist folder.
 
 TODO: Is it possible to distribute to mobile?
+
+## Issues
+
+Unable to install `openai-whisper` by using `poetry add`. So install it through `pip install` in `poetry shell` environment.
 
 ## TODO
 

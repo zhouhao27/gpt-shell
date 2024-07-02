@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "gptshell"
+version = "0.1.0"
+description = "A shell application similar to Ollama application. It works as a multimodel interactive chat application. Suports RAG."
+authors = ["Zhou Hao <zhou.hao.27@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+openai = "^1.35.7"
+numpy = "^1.17"
+sounddevice = "^0.4.7"
+soundfile = "^0.12.1"
+python-dotenv = "^1.0.1"
+cmd2 = "^2.4.3"
+yaspin = "^3.0.2"
+simpleaudio = "^1.0.4"
+pypdf = "^4.2.0"
+filetype = "^1.2.0"
+ollama = "^0.2.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

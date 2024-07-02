@@ -13,3 +13,6 @@ gptshell/modules/ChatTTS
 *.env
 data/
 *.conf
+.venv
+poetry.lock
+

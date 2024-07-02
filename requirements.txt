@@ -1,5 +1,5 @@
 openai
-openai-whisper # openai-whisper, should try other whisper model?
+openai-whisper
 numpy
 sounddevice
 soundfile
