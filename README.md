@@ -80,6 +80,5 @@ Unable to install `openai-whisper` by using `poetry add`. So install it through 
 
 - Add a logger for debug only
 - Refactor to use type
-- Add image input
 - Support such as Function Calling, RAG etc
 - Develop a plugin system to support such as web search etc
