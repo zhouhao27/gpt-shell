@@ -64,6 +64,7 @@ TODO: Is it possible to distribute to mobile?
 ## TODO
 
 - Save settings 
+- Refactor to use type
 - Add image input
 - Support such as Function Calling, RAG etc
 - Develop a plugin system to support such as web search etc

@@ -17,7 +17,7 @@ from __init__ import __app_name__, _get_waiting_quotes
 import argparse
 from pypdf import PdfReader 
 import filetype
-from easysettings import EasySettings
+from config import Config
 
 class App(cmd2.Cmd):
     def __init__(self, env):
@@ -35,17 +35,15 @@ class App(cmd2.Cmd):
         
         with yaspin(text="Loading...", color="cyan") as sp:
             time.sleep(1)            
-            # Setting can be saved 
-            # Get name of env file withou extension
-            name = os.path.splitext(self.env)[0]
-            # Use it as config file name
-            config_file = name + '.conf'
-            self.settings = EasySettings(config_file)
-            model_name = self.settings.get('model')
+            self.config = Config(env_file=self.env)
+            model_name = self.config.get_model()
             self.chatBot = ChatBot(env_file=self.env,model_name=model_name)
-            tts = self.settings.get('tts')
+            tts = self.config.get_tts()
             if tts:
                 self.set_tts(True)
+            self.debug = self.config.get_debug()
+            if self.debug:
+                self.set_debug(True)
 
         self.welcome()
 
@@ -60,19 +58,17 @@ class App(cmd2.Cmd):
         if args.model:
             model = args.model
             self.chatBot = ChatBot(env_file=self.env, model_name=model)
-            self.settings.set('model', model)
+            self.config.set_model(model)
             self.poutput(Style.INFO.style('Model changed to {}'.format(model)))         
 
         # Check if tts value changed
         if args.tts: 
             if args.tts == '1' and self.speaker is None: 
                 self.set_tts(True)
-                self.settings.set('tts', True)
+                self.config.set_tts(True)
             elif args.tts == '0' and self.speaker is not None:   
                 self.set_tts(False)           
-                self.settings.set('tts', False)      
-
-        self.settings.save()
+                self.config.set_tts(False)        
              
     def set_tts(self, enabled = False):
         if enabled:
@@ -81,6 +77,14 @@ class App(cmd2.Cmd):
         else:
             self.speaker = None
             self.poutput(Style.INFO.style('TTS disabled'))
+
+    def set_debug(self, enabled = True):
+        if enabled:
+            self.debug = True
+            self.poutput(Style.INFO.style('Debug mode enabled'))
+        else:
+            self.debug = False
+            self.poutput(Style.INFO.style('Debug mode disabled'))
 
     @cmd2.with_category(__app_name__)        
     def do_speak(self, text):

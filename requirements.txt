@@ -9,5 +9,4 @@ yaspin
 simpleaudio
 pypdf
 filetype
-EasySettings
 ollama
