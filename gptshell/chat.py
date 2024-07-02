@@ -39,11 +39,11 @@ class ChatBot(cmd2.Cmd):
         )
         complete_response = ""
         for chunk in response:                
-            if chunk.choices is not None:                
-                if chunk.choices[0].delta.content is not None:
-                    # self.history.append({"role": "assistant", "content": chunk.choices[0].delta})
-                    complete_response += chunk.choices[0].delta.content
-                    streaming_callback(chunk.choices[0].delta.content)
+            if chunk.choices is not None:    
+                if len(chunk.choices) > 0:            
+                    if chunk.choices[0].delta.content is not None:
+                        complete_response += chunk.choices[0].delta.content
+                        streaming_callback(chunk.choices[0].delta.content)
         
         self.history.append({"role": "assistant", "content": complete_response})
         return complete_response
