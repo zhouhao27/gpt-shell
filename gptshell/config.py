@@ -1,4 +1,5 @@
 import configparser
+from utils import str_to_bool
 
 class Config:
     def __init__(self, env_file, config_file = 'config.conf'):        
@@ -14,16 +15,16 @@ class Config:
         self.__set(self.env, 'model', model)
 
     def get_tts(self) -> bool:
-        return self.__get(self.env, 'tts')
+        return str_to_bool(self.__get('Default', 'tts'))
 
     def set_tts(self, tts: bool):
-        self.__set(self.env, 'tts', tts)
+        self.__set('Default', 'tts', tts)
 
     def get_debug(self) -> bool:
-        return self.__get(self.env, 'debug')
+        return str_to_bool(self.__get('Default', 'debug'))
     
     def set_debug(self, debug: bool):
-        self.__set(self.env, 'debug', debug)
+        self.__set('Default', 'debug', debug)
 
     def __get(self, section, key):
         if not self.config.has_section(section):

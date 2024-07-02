@@ -26,12 +26,6 @@ class App(cmd2.Cmd):
         self.env = env
         self.recording = False
         self.speaker = None
-
-        # Hide unnecessary commands
-        self.hidden_commands.append('macro')
-        self.hidden_commands.append('run_pyscript')
-        self.hidden_commands.append('run_script')
-        self.hidden_commands.append('edit')
         
         with yaspin(text="Loading...", color="cyan") as sp:
             time.sleep(1)            
@@ -40,17 +34,32 @@ class App(cmd2.Cmd):
             self.chatBot = ChatBot(env_file=self.env,model_name=model_name)
             tts = self.config.get_tts()
             if tts:
-                self.set_tts(True)
-            self.debug = self.config.get_debug()
-            if self.debug:
-                self.set_debug(True)
+                self.set_tts(True, silent=True)
+            self.debug = self.config.get_debug()            
+            self.set_debug(self.debug)
 
+        self.remove_commands()
         self.welcome()
+
+    # Build-in commands hooks
+    def onecmd_plus_hooks(self, line):
+        cmd_name, words, _ = self.parseline(line)
+        args = words.split()
+        if len(args) > 1:            
+            if cmd_name == 'set':
+                if args[0].lower() == 'debug':
+                    if args[1].lower() == 'true':
+                        return super().onecmd_plus_hooks('config -d 1')
+                    else:
+                        return super().onecmd_plus_hooks('config -d 0')                    
+
+        return super().onecmd_plus_hooks(line)
 
     # Config
     cmd_parser = cmd2.Cmd2ArgumentParser(description='Config')
     cmd_parser.add_argument('-m', '--model', help='Name of the model')
     cmd_parser.add_argument('-t', '--tts', choices=['0', '1'], help='Enable/Disable TTS')
+    cmd_parser.add_argument('-d', '--debug', choices=['0', '1'], help='Enable/Disable Debug')
 
     @cmd2.with_category(__app_name__)
     @cmd2.with_argparser(cmd_parser)
@@ -69,22 +78,34 @@ class App(cmd2.Cmd):
             elif args.tts == '0' and self.speaker is not None:   
                 self.set_tts(False)           
                 self.config.set_tts(False)        
+
+        if args.debug:
+            if args.debug == '1':
+                self.set_debug(True)
+                self.config.set_debug(True)
+            elif args.debug == '0':
+                self.set_debug(False)
+                self.config.set_debug(False)
              
-    def set_tts(self, enabled = False):
+    def set_tts(self, enabled = False, silent = False):
         if enabled:
             self.speaker = ChatTTS.Chat()
-            self.poutput(Style.INFO.style('TTS enabled'))
+            if not silent:
+                self.poutput(Style.INFO.style('TTS enabled'))
         else:
             self.speaker = None
-            self.poutput(Style.INFO.style('TTS disabled'))
+            if not silent:
+                self.poutput(Style.INFO.style('TTS disabled'))
 
     def set_debug(self, enabled = True):
+        # TODO: Trigger the system set debug from poutput, if there a better way?
         if enabled:
             self.debug = True
-            self.poutput(Style.INFO.style('Debug mode enabled'))
+            self.poutput(Style.PROMPT.style('set debug True'))
+
         else:
             self.debug = False
-            self.poutput(Style.INFO.style('Debug mode disabled'))
+            self.poutput(Style.PROMPT.style('set debug False'))
 
     @cmd2.with_category(__app_name__)        
     def do_speak(self, text):
@@ -158,9 +179,6 @@ class App(cmd2.Cmd):
         self.chat(line)
 
     def chat(self, text):
-        global say
-        say = ''
-        # self.poutput(Style.PROMPT.style('{}: '.format(self.chatBot.get_model_name())),end='')
         def chat_callback(stream):
             self.poutput(Style.BOT.style('{}'.format(stream)),end='')
 
@@ -194,4 +212,17 @@ class App(cmd2.Cmd):
         play_obj = wave_obj.play()
         play_obj.wait_done()  # Wait until sound has finished playing
         
-    
+    def remove_commands(self):
+        del cmd2.Cmd.do_macro
+        del cmd2.Cmd.do_edit
+        del cmd2.Cmd.do_run_pyscript
+        del cmd2.Cmd.do_run_script
+        del cmd2.Cmd.do_set
+
+        # # Hide unnecessary commands
+        # self.remove_command('macro')
+        # self.remove_command('run_pyscript')
+        # self.remove_command('run_script')
+        # self.remove_command('edit')
+        # self.remove_command('set')
+        

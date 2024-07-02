@@ -63,7 +63,7 @@ TODO: Is it possible to distribute to mobile?
 
 ## TODO
 
-- Save settings 
+- Add a logger for debug only
 - Refactor to use type
 - Add image input
 - Support such as Function Calling, RAG etc
