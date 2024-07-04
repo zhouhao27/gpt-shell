@@ -126,6 +126,15 @@ class App(cmd2.Cmd):
         self.poutput(Style.BOT.style('Bye!'))
         return True
     
+    sysprompt_parser = cmd2.Cmd2ArgumentParser(description='System Prompt')
+    sysprompt_parser.add_argument('-t', '--text', help='System prompt text')
+    sysprompt_parser.add_argument('-f', '--file', help='System prompt file', completer=cmd2.Cmd.path_complete)
+
+    @cmd2.with_argparser(sysprompt_parser)
+    @cmd2.with_category(__app_name__)
+    def do_prompt(self, args: argparse.Namespace):
+        self.poutput(Style.PROMPT.style('To be implemented'))
+
     img_parser = cmd2.Cmd2ArgumentParser(description='Add image as input')
     img_parser.add_argument('path', help='Path of the image file', completer=cmd2.Cmd.path_complete)
 
@@ -177,13 +186,16 @@ class App(cmd2.Cmd):
     
     @cmd2.with_category(__app_name__)
     def do_clear(self, line):    
+        """Clear screen"""    
+        self.__clear__()
+        self.poutput(Style.INFO.style('Chat session cleared'))
+
+    @cmd2.with_category(__app_name__)
+    def do_reset(self, _):
         """Clear screen and reset the chat session (history)"""    
         self.chatBot.reset()        
-        if os.name == 'nt':
-            os.system('cls')
-        else:
-            os.system('clear')
-        self.poutput(Style.INFO.style('Chat session cleared'))
+        self.__clear__()
+        self.poutput(Style.INFO.style('Chat screen cleared. Chat history reset.'))
 
     @cmd2.with_category(__app_name__)
     def do_list(self, line):    
@@ -242,3 +254,10 @@ class App(cmd2.Cmd):
         # del cmd2.Cmd.do_run_pyscript
         # del cmd2.Cmd.do_run_script
         pass
+
+    #  Clear screen
+    def __clear__(self):
+        if os.name == 'nt':
+            os.system('cls')
+        else:
+            os.system('clear')
