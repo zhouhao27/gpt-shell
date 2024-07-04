@@ -10,10 +10,12 @@ from cmd2 import (
 )
 
 class ChatBot(cmd2.Cmd): 
-    def __init__(self, env_file, model_name=None):
+    def __init__(self, env_file, model_name=None,system_prompt=''):
         super().__init__(allow_cli_args=False)
 
         _ = load_dotenv(find_dotenv(env_file))
+
+        self.system_prompt = system_prompt
 
         # TODO: This might not be the best solution 
         self.is_openai = False
@@ -27,8 +29,7 @@ class ChatBot(cmd2.Cmd):
             self.model_name = os.environ.get("DEFAULT_MODEL")
         self.reset()
     
-    def chat(self,user_query, streaming_callback):
-        
+    def chat(self,user_query, streaming_callback):        
         self.history.append({"role": "user", "content": user_query})
         response = self.client.chat.completions.create(
             model=self.model_name,
@@ -53,7 +54,7 @@ class ChatBot(cmd2.Cmd):
     
     def reset(self):
         self.history = [
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": self.system_prompt},
         ]
 
     def list(self):
@@ -79,3 +80,11 @@ class ChatBot(cmd2.Cmd):
                     self.poutput(Style.INFO.style(f"  parameter size: {model['details']['parameter_size']}"))
                     self.poutput(Style.INFO.style(f"  quantization level: {model['details']['quantization_level']}"))
                     self.poutput(Style.INFO.style("-" * 40))
+
+    def load_system_prompt(self, text: str):
+        self.system_prompt = text
+        self.poutput(Style.INFO.style(f"System Prompt loaded:\n\n{self.system_prompt}"))            
+        self.reset()
+        self.poutput(Style.INFO.style('\nChat session reset'))            
+
+

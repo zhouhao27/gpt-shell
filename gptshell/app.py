@@ -133,7 +133,17 @@ class App(cmd2.Cmd):
     @cmd2.with_argparser(sysprompt_parser)
     @cmd2.with_category(__app_name__)
     def do_prompt(self, args: argparse.Namespace):
-        self.poutput(Style.PROMPT.style('To be implemented'))
+        if args.text:
+            self.chatBot.load_system_prompt(args.text)
+            return
+        
+        if args.file:
+            if not os.path.exists(args.file):
+                self.perror(f'File {args.file} does not exist')
+                return
+            
+            with open(args.file, 'r') as f:
+                 self.chatBot.load_system_prompt(f.read())                                          
 
     img_parser = cmd2.Cmd2ArgumentParser(description='Add image as input')
     img_parser.add_argument('path', help='Path of the image file', completer=cmd2.Cmd.path_complete)

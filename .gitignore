@@ -15,4 +15,5 @@ data/
 *.conf
 .venv
 poetry.lock
+templates/
 
